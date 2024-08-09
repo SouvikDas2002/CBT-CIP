@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Chip, Stack, IconButton, Box, Input, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/system';
+import { useSelector } from 'react-redux';
 
 // Styled Components
 const StyledDialog = styled(Dialog)({
@@ -31,6 +32,8 @@ const CreatePost = ({ open, handleClose }) => {
   const [comments, setComments] = useState('');
   const [image, setImage] = useState(null);
 
+  const user_id=useSelector((state)=>state.auth.user)
+
   const handleTagsChange = (event) => {
     setTags(event.target.value);
   };
@@ -45,17 +48,47 @@ const CreatePost = ({ open, handleClose }) => {
     }
   };
 
-  const handleSubmit = () => {
-    // Handle post submission here
-    console.log({
+  const handleSubmit = async () => {
+    // Validation
+    if (!title || !author || !content || !tags) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    const newPost = {
+      id:user_id.id,
       title,
       author,
       content,
       tags: tags.split(',').map(tag => tag.trim()),
       comments: comments.split('\n').map(comment => ({ content: comment, date: new Date().toISOString().split('T')[0] })),
-      image
-    });
-    handleClose(); // Close dialog after submission
+      picture: image || '', // Ensure picture is not null
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newPost),
+      });
+
+      if (response.ok) {
+        // Reset form and close dialog on successful post creation
+        setTitle('');
+        setAuthor('');
+        setContent('');
+        setTags('');
+        setComments('');
+        setImage(null);
+        handleClose();
+      } else {
+        console.error('Failed to create post:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+    }
   };
 
   return (

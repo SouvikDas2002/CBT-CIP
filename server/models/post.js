@@ -2,22 +2,21 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const commentSchema = new Schema({
-  id: { type: Number, required: true },
-  author: { type: String, required: true },
-  content: { type: String, required: true },
-  date: { type: Date, required: true }
+  author: { type: String},
+  content: { type: String },
+  date: { type: Date }
 });
 
 const postSchema = new Schema({
-  id: { type: Number, required: true, unique: true },
-  title: { type: String, required: true },
-  author: { type: String, required: true },
-  content: { type: String, required: true },
-  tags: { type: [String], required: true },
-  published_date: { type: Date, required: true },
-  likes: { type: Number, required: true },
-  picture:{type:String,required:false},
-  comments: { type: [commentSchema], required: true }
+  id: { type: String,require:true},
+  title: { type: String, require: true},
+  author: { type: String, require: true },
+  content: { type: String, require: true },
+  tags: { type: [String], require: true },
+  published_date: { type: Date, default: Date.now }, // Set default if not provided
+  likes: { type: Number, default: 0 }, // Default to 0 if not provided
+  picture: { type: String, require: true },
+   comments: { type: [commentSchema], default: [] } // Default to empty array
 });
 
 const Post = mongoose.model('Post', postSchema);

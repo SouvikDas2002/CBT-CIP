@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import PassRecover from './pages/PassRecover';
 import Profile from './pages/Profile';
 import { logout } from './redux/authSlice';
+import Myactivity from './pages/Myactivity';
 
 const theme = createTheme();
 
@@ -47,6 +48,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/password-recovery" element={<PassRecover />} />
+          <Route path='/myactivity' element={<Myactivity/>}/>
         </Routes>
       </Router>
     </ThemeProvider>

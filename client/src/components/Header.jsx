@@ -27,7 +27,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               Create Post
             </Button>
             <CreatePost open={open} handleClose={handleClose}/>
-            <Button color="inherit" component={Link} to="/profile">
+            <Button color="inherit" component={Link} to="/myactivity">
               My Activity
             </Button>
             <Button color="inherit" component={Link} to="/profile">
