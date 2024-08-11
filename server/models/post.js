@@ -13,10 +13,11 @@ const postSchema = new Schema({
   author: { type: String, require: true },
   content: { type: String, require: true },
   tags: { type: [String], require: true },
-  published_date: { type: Date, default: Date.now }, // Set default if not provided
-  likes: { type: Number, default: 0 }, // Default to 0 if not provided
+  published_date: { type: Date, default: Date.now }, 
+  likes: { type: Number, default: 0 },
+  likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   picture: { type: String, require: true },
-   comments: { type: [commentSchema], default: [] } // Default to empty array
+   comments: { type: [commentSchema], default: [] }
 });
 
 const Post = mongoose.model('Post', postSchema);

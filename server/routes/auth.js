@@ -23,7 +23,7 @@ router.post('/signup', async (req, res) => {
         console.log(payload);
         const token = jwt.sign(payload, process.env.ACCESS_SECRET, { expiresIn: '1h' });
 
-    res.status(201).json({ token,userId:user._id,username:user.username });
+    res.status(201).json({ token,userId:user._id,username:user.username,email:email,bio:user.bio,profilePic:user.profilePic });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -50,7 +50,7 @@ router.post('/login', async (req, res) => {
     const payload = { userId: user._id };
     const token = jwt.sign(payload, process.env.ACCESS_SECRET, { expiresIn: '1h' });
 
-    res.json({ token ,userId:user._id,username:user.username});
+    res.json({ token ,userId:user._id,username:user.username,email:email,bio:user.bio,profilePic:user.profilePic});
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

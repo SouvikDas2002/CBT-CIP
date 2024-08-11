@@ -4,7 +4,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/system';
 import { useSelector } from 'react-redux';
 
-// Styled Components
 const StyledDialog = styled(Dialog)({
   '& .MuiPaper-root': {
     borderRadius: 12,
@@ -52,18 +51,16 @@ const CreatePost = ({ open, handleClose }) => {
   };
 
   const handleSubmit = async () => {
-    // Validation
     if (!title || !author || !content || !tags || !imageFile) {
       alert('Please fill in all required fields.');
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', imageFile); // Append the image file
+    formData.append('file', imageFile);
 
-    // Upload the image
     try {
-      const uploadResponse = await fetch('http://localhost:3000/api/upload', {
+      const uploadResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -82,10 +79,10 @@ const CreatePost = ({ open, handleClose }) => {
         content,
         tags: tags.split(',').map(tag => tag.trim()),
         comments: comments.split('\n').map(comment => ({ content: comment, date: new Date().toISOString().split('T')[0] })),
-        picture: uploadResult.filePath, // Use the uploaded image path
+        picture: uploadResult.filePath,
       };
 
-      const response = await fetch('http://localhost:3000/api/posts', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +91,6 @@ const CreatePost = ({ open, handleClose }) => {
       });
 
       if (response.ok) {
-        // Reset form and close dialog on successful post creation
         setTitle('');
         setAuthor('');
         setContent('');

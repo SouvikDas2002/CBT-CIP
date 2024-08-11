@@ -1,4 +1,3 @@
-// src/components/PasswordRecovery.jsx
 import React, { useState } from 'react';
 import { Box, Button, Container, TextField, Typography, Paper } from '@mui/material';
 
@@ -7,7 +6,6 @@ const PassRecover = () => {
 
   const handleRecovery = (e) => {
     e.preventDefault();
-    // Handle password recovery logic here
     alert(`Password recovery link sent to ${email}`);
   };
 
@@ -22,6 +20,7 @@ const PassRecover = () => {
         backgroundImage: 'url(/images/background.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        pt:10
       }}
     >
       <Paper elevation={6} sx={{ padding: 3 }}>
@@ -53,7 +52,7 @@ const PassRecover = () => {
               type="submit"
               fullWidth
               variant="contained"
-              color="primary"
+              color="secondary"
               sx={{ mt: 3, mb: 2 }}
             >
               Send Recovery Email

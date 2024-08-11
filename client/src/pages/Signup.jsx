@@ -31,7 +31,7 @@ const Signup = () => {
 
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" sx={{pt:10}}>
       <Paper elevation={6} style={{ padding: 20, marginTop: 50 }}>
         <Box
           sx={{

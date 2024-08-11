@@ -28,10 +28,10 @@ const MyActivity = () => {
   const useId=useSelector(state=>state.auth.user.id)
 
   useEffect(() => {
-    // Fetch posts from the backend
+
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/posts/userposts/${useId}`); // Replace with your API endpoint
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/userposts/${useId}`); // Replace with your API endpoint
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -58,11 +58,10 @@ const MyActivity = () => {
   };
 
   const handleUpdatePost = async () => {
-    // Update post logic here
     try {
         console.log(currentPost._id);
         
-      const response = await fetch(`http://localhost:3000/api/posts/${useId}/${currentPost._id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/${useId}/${currentPost._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +73,6 @@ const MyActivity = () => {
         throw new Error('Failed to update post');
       }
 
-      // Update the post in the local state
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === currentPost._id
@@ -90,17 +88,14 @@ const MyActivity = () => {
   };
 
   const handleDeletePost = async (postId) => {
-    // Delete post logic here
     try {
-      const response = await fetch(`http://localhost:3000/api/posts/deletePost/${useId}/${postId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/deletePost/${useId}/${postId}`, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
         throw new Error('Failed to delete post');
       }
-
-      // Remove the deleted post from the local state
       setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -108,7 +103,7 @@ const MyActivity = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom>
         My Activity
       </Typography>
@@ -119,7 +114,7 @@ const MyActivity = () => {
               <CardMedia
                 component="img"
                 height="140"
-                image={`http://localhost:3000${post.picture}`}
+                image={`${import.meta.env.VITE_API_URL}${post.picture}`}
                 alt={post.title}
               />
               <CardContent sx={{ flexGrow: 1 }}>

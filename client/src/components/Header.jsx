@@ -13,7 +13,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
     setOpen(false);
   }
   return (
-    <AppBar position="static" style={{backgroundColor:"black"}}>
+    <AppBar position="fixed" style={{backgroundColor:"black"}}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           ConnectSphere

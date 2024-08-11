@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'
-import { useNavigate } from 'react-router-dom';
+// import {jwtDecode} from 'jwt-decode'
+// import { useNavigate } from 'react-router-dom';
 
 export const register = createAsyncThunk(
   'auth/register',
@@ -38,7 +38,10 @@ const authSlice = createSlice({
     loading: false,
     user: {
       id:null,
-      username:null
+      username:null,
+      email:null,
+      profilePic:null,
+      bio:null
     },
     error: null,
   },
@@ -48,8 +51,17 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.user.id=null,
-      state.user.username=null
+      state.user.username=null,
+      state.user.email=null,
+      state.user.profilePic=null,
+      state.user.bio=null
     },
+    localUpdate:(state,action)=>{
+      state.user={
+        ...state.user,
+        ...action.payload
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -63,6 +75,9 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user.id =  action.payload.userId;
         state.user.username =  action.payload.username;
+        state.user.email =  action.payload.email;
+        state.user.bio =  action.payload.bio;
+        state.user.profilePic =  action.payload.profilePic;
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(register.rejected, (state, action) => {
@@ -82,6 +97,9 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user.id =  action.payload.userId;
         state.user.username =  action.payload.username;
+        state.user.email =  action.payload.email;
+        state.user.bio =  action.payload.bio;
+        state.user.profilePic =  action.payload.profilePic;
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(login.rejected, (state, action) => {
@@ -92,5 +110,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout,localUpdate } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,7 +1,7 @@
 const express = require('express');
-const Post = require('../models/post');
-const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
+const Post = require('../models/post');
+const User=require('../models/user')
 
 // Create a new post
 router.post('/', async (req, res) => {
@@ -88,6 +88,7 @@ router.put('/:userid/:id',async(req,res)=>{
   }
 })
 
+// handle post deletion
 router.delete('/deletePost/:userid/:postid',async(req,res)=>{
   try{
     const postId=req.params.postid;
@@ -115,6 +116,7 @@ router.delete('/deletePost/:userid/:postid',async(req,res)=>{
   }
 })
 
+// comments route
 router.post('/comments/:id',async(req,res)=>{
   try{
     const {id}=req.params;
@@ -137,5 +139,58 @@ router.post('/comments/:id',async(req,res)=>{
     res.status(500).json({message:'Server error',error})
   }
 })
+// Like a post
+router.post('/like/:id', async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.body.userId;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    if (post.likedBy.includes(userId)) {
+      return res.status(400).json({ message: 'You have already liked this post' });
+    }
+
+    post.likes += 1;
+    post.likedBy.push(userId);
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.error('Error liking the post:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+// Unlike a post
+router.post('/unlike/:id', async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.body.userId;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    if (!post.likedBy.includes(userId)) {
+      return res.status(400).json({ message: 'You have not liked this post' });
+    }
+
+    post.likes -= 1;
+    post.likedBy = post.likedBy.filter(id => id.toString() !== userId);
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.error('Error unliking the post:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 module.exports = router;

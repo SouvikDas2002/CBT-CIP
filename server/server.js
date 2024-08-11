@@ -25,11 +25,10 @@ require('dotenv').config();
 
 const mongoose=require('mongoose');
 const authRoute=require("./routes/auth");
-// const userRoute=require('./routes/users');
+const userRoute=require('./routes/users');
 const postRoute=require('./routes/post');
 const multer=require('multer');
 const path=require('path');
-const Post = require('./models/post');
 
 app.use(express.urlencoded({extended:true}));
 app.use("/images",express.static(path.join(__dirname,"images")))
@@ -67,7 +66,7 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 // Routes
 
 app.use("/api/auth",authRoute);
-// app.use("/api/users",userRoute);
+app.use("/api/users",userRoute);
 app.use("/api/posts",postRoute);
 
 

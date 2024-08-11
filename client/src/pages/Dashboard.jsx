@@ -33,7 +33,7 @@ const Dashboard = () => {
     // Fetch posts from the backend
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/posts'); // Replace with your API endpoint
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -47,8 +47,9 @@ const Dashboard = () => {
     fetchPosts();
     const interval = setInterval(fetchPosts, 5000);
     return () => clearInterval(interval);
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+  }, []);
 
+  // handle comment box to open
   const handleCommentsOpen = (post) => {
     setSelectedPost(post);
     setOpen(true);
@@ -62,10 +63,11 @@ const Dashboard = () => {
     setNewComment(event.target.value);
   };
 
+  // handle comment submission
   const handleCommentSubmit = async(event) => {
     event.preventDefault();
-    // Handle the comment submission, such as updating the state or sending a request to the server.
-    const response=await fetch(`http://localhost:3000/api/posts/comments/${selectedPost._id}`,{
+
+    const response=await fetch(`${import.meta.env.VITE_API_URL}/api/posts/comments/${selectedPost._id}`,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -84,8 +86,40 @@ const Dashboard = () => {
     setNewComment('');
   };
 
+  const handleLikeToggle = async (postId, isLiked) => {
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/api/posts/${isLiked ? 'unlike' : 'like'}/${postId}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user.id }), // Send user ID in the request body
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to ${isLiked ? 'unlike' : 'like'} the post`);
+      }
+  
+      const updatedPost = await response.json();
+  
+      // Update the local state with the new number of likes and likedBy
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => (post._id === updatedPost._id ? updatedPost : post))
+      );
+  
+      // If the toggled post is currently selected, update it as well
+      if (selectedPost && selectedPost._id === updatedPost._id) {
+        setSelectedPost(updatedPost);
+      }
+    } catch (error) {
+      console.error(`Error ${isLiked ? 'unliking' : 'liking'} the post:`, error);
+    }
+  };
+  
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom>
         Hi, {user.username}
       </Typography>
@@ -96,7 +130,7 @@ const Dashboard = () => {
               <CardMedia
                 component="img"
                 height="140"
-                image={`http://localhost:3000${post.picture}`} // Assuming `post.picture` contains the filename
+                image={`${import.meta.env.VITE_API_URL}${post.picture}`}
                 alt={post.title}
                 onClick={() => handleCommentsOpen(post)}
                 sx={{ cursor: 'pointer' }}
@@ -121,14 +155,15 @@ const Dashboard = () => {
                 </Typography>
               </CardContent>
               <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #ddd' }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<ThumbUp />}
-                  sx={{ textTransform: 'none', boxShadow: 2 }}
-                >
-                  Like
-                </Button>
+              <Button
+  variant="contained"
+  color={post.likedBy.includes(user.id) ? 'secondary' : 'primary'}
+  startIcon={<ThumbUp />}
+  sx={{ textTransform: 'none', boxShadow: 2 }}
+  onClick={() => handleLikeToggle(post._id, post.likedBy.includes(user.id))} // Toggle like/unlike
+>
+  {post.likedBy.includes(user.id) ? 'Unlike' : 'Like'}
+</Button>
                 <Button
                   variant="contained"
                   color="secondary"
@@ -143,6 +178,7 @@ const Dashboard = () => {
           </Grid>
         ))}
       </Grid>
+
       <Drawer
         anchor="right"
         open={open}
@@ -156,7 +192,7 @@ const Dashboard = () => {
             <>
               <CardMedia
                 component="img"
-                image={`http://localhost:3000/images/${selectedPost.picture}`} // Assuming `selectedPost.picture` contains the filename
+                image={`${import.meta.env.VITE_API_URL}${selectedPost.picture}`}
                 alt={selectedPost.title}
                 sx={{ mb: 2 }}
               />
