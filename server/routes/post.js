@@ -3,11 +3,11 @@ const Post = require('../models/post');
 const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
-// POST /api/posts - Create a new post
+// Create a new post
 router.post('/', async (req, res) => {
   try {
     const { id,title, author, content, tags, picture, comments, likes } = req.body;
-    console.log(req.body);;
+    // console.log(req.body);;
     
     const newPost = new Post({
         id,
@@ -20,12 +20,9 @@ router.post('/', async (req, res) => {
         likes,
         published_date: new Date(),
     });
-    console.log(newPost);
+    // console.log(newPost);
 
-    // Save the post to the database
     const savedPost = await newPost.save();
-
-    // Respond with the saved post
     res.status(201).json(savedPost);
   } catch (error) {
     console.error('Error creating post:', error);
@@ -33,7 +30,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /api/posts - Get all posts
+// Get all posts
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find();
@@ -62,8 +59,8 @@ router.put('/:userid/:id',async(req,res)=>{
   try{
     const postId=req.params.id;
     const userId=req.params.userid;
-    console.log(postId);
-    console.log(userId);
+    // console.log(postId);
+    // console.log(userId);
 
     const post=await Post.findById(postId);
 
@@ -95,10 +92,10 @@ router.delete('/deletePost/:userid/:postid',async(req,res)=>{
   try{
     const postId=req.params.postid;
     const userId=req.params.userid;
-    console.log(postId+" "+userId);
+    // console.log(postId+" "+userId);
 
     const post=await Post.findById(postId);
-    console.log(post);
+    // console.log(post);
     
     if(!post){
       return res.status(404).json({message:'Post not found'});
@@ -115,6 +112,29 @@ router.delete('/deletePost/:userid/:postid',async(req,res)=>{
   }catch(error){
     console.error('Error deleting post:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+})
+
+router.post('/comments/:id',async(req,res)=>{
+  try{
+    const {id}=req.params;
+    const {author,content}=req.body;
+
+    const post=await Post.findById(id);
+    if(!post){
+      return res.status(404).json({message:'Post not found'})
+    }
+    const newComment={
+      author,
+      content,
+      date:new Date()
+    }
+    post.comments.push(newComment);
+    await post.save();
+
+    res.status(200).json(post);
+  }catch(error){
+    res.status(500).json({message:'Server error',error})
   }
 })
 

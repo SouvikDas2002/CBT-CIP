@@ -62,10 +62,25 @@ const Dashboard = () => {
     setNewComment(event.target.value);
   };
 
-  const handleCommentSubmit = (event) => {
+  const handleCommentSubmit = async(event) => {
     event.preventDefault();
     // Handle the comment submission, such as updating the state or sending a request to the server.
-    console.log('New Comment:', newComment);
+    const response=await fetch(`http://localhost:3000/api/posts/comments/${selectedPost._id}`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+      },
+      body:JSON.stringify({
+        author:user.username,
+        content:newComment
+      })
+    })
+    if(!response.ok){
+      throw new Error('Failed to submit comment');
+    }
+    const updatedPost=await response.json();
+    setSelectedPost(updatedPost);
+    setPosts(posts.map(post=>post._id===updatedPost._id?updatedPost:post));
     setNewComment('');
   };
 
@@ -81,7 +96,7 @@ const Dashboard = () => {
               <CardMedia
                 component="img"
                 height="140"
-                image={post.picture}
+                image={`http://localhost:3000${post.picture}`} // Assuming `post.picture` contains the filename
                 alt={post.title}
                 onClick={() => handleCommentsOpen(post)}
                 sx={{ cursor: 'pointer' }}
@@ -136,14 +151,12 @@ const Dashboard = () => {
         <Box
           sx={{ width: 350, p: 2 }}
           role="presentation"
-          onClick={handleCommentsClose}
-          onKeyDown={handleCommentsClose}
         >
           {selectedPost && (
             <>
               <CardMedia
                 component="img"
-                image={selectedPost.picture}
+                image={`http://localhost:3000/images/${selectedPost.picture}`} // Assuming `selectedPost.picture` contains the filename
                 alt={selectedPost.title}
                 sx={{ mb: 2 }}
               />

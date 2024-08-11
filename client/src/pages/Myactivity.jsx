@@ -119,7 +119,7 @@ const MyActivity = () => {
               <CardMedia
                 component="img"
                 height="140"
-                image={post.picture}
+                image={`http://localhost:3000${post.picture}`}
                 alt={post.title}
               />
               <CardContent sx={{ flexGrow: 1 }}>

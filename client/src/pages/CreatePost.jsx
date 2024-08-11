@@ -31,8 +31,9 @@ const CreatePost = ({ open, handleClose }) => {
   const [tags, setTags] = useState('');
   const [comments, setComments] = useState('');
   const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
-  const user_id=useSelector((state)=>state.auth.user)
+  const user_id = useSelector((state) => state.auth.user);
 
   const handleTagsChange = (event) => {
     setTags(event.target.value);
@@ -44,28 +45,46 @@ const CreatePost = ({ open, handleClose }) => {
 
   const handleImageChange = (event) => {
     if (event.target.files.length > 0) {
-      setImage(URL.createObjectURL(event.target.files[0]));
+      const file = event.target.files[0];
+      setImage(URL.createObjectURL(file));
+      setImageFile(file);
     }
   };
 
   const handleSubmit = async () => {
     // Validation
-    if (!title || !author || !content || !tags) {
+    if (!title || !author || !content || !tags || !imageFile) {
       alert('Please fill in all required fields.');
       return;
     }
 
-    const newPost = {
-      id:user_id.id,
-      title,
-      author,
-      content,
-      tags: tags.split(',').map(tag => tag.trim()),
-      comments: comments.split('\n').map(comment => ({ content: comment, date: new Date().toISOString().split('T')[0] })),
-      picture: image || '', // Ensure picture is not null
-    };
+    const formData = new FormData();
+    formData.append('file', imageFile); // Append the image file
 
+    // Upload the image
     try {
+      const uploadResponse = await fetch('http://localhost:3000/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const uploadResult = await uploadResponse.json();
+
+      if (!uploadResponse.ok) {
+        console.error('Failed to upload image:', uploadResult.message);
+        return;
+      }
+
+      const newPost = {
+        id: user_id.id,
+        title,
+        author,
+        content,
+        tags: tags.split(',').map(tag => tag.trim()),
+        comments: comments.split('\n').map(comment => ({ content: comment, date: new Date().toISOString().split('T')[0] })),
+        picture: uploadResult.filePath, // Use the uploaded image path
+      };
+
       const response = await fetch('http://localhost:3000/api/posts', {
         method: 'POST',
         headers: {

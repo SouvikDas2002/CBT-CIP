@@ -14,7 +14,7 @@ app.use(cors({
 
 const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:5173', // Adjust this according to your frontend URL
+      origin: 'http://localhost:5173',
       methods: ['GET', 'POST']
     }
   });
@@ -29,11 +29,10 @@ const authRoute=require("./routes/auth");
 const postRoute=require('./routes/post');
 const multer=require('multer');
 const path=require('path');
-const { log } = require('console');
 const Post = require('./models/post');
 
 app.use(express.urlencoded({extended:true}));
-app.use("/images",express.static(path.join(__dirname,"/images")))
+app.use("/images",express.static(path.join(__dirname,"images")))
 
 // mongodb connection
 
@@ -49,17 +48,20 @@ mongoose
 
 const storage=multer.diskStorage({
     destination:(req,file,cb)=>{
-        cb(null,'images');
+        cb(null,path.join(__dirname,'images'));
     },
     filename:(req,file,cb)=>{
-        cb(null,req.body.name);
+        cb(null,Date.now()+'-'+file.originalname);
     }
 })
 const upload=multer({storage:storage});
 
-app.post("/api/upload",upload.single("file"),(req,res)=>{
-    res.status(200).json("file has been uploaded");
-})
+app.post("/api/upload", upload.single("file"), (req, res) => {
+  if (!req.file) {
+      return res.status(400).json("No file uploaded.");
+  }
+  res.status(200).json({ message: "File has been uploaded", filePath: `/images/${req.file.filename}` });
+});
 
 
 // Routes
