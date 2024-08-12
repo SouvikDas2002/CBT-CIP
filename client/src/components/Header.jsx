@@ -6,6 +6,7 @@ import CreatePost from '../pages/CreatePost';
 const Header = ({ isAuthenticated, onLogout }) => {
   const [open,setOpen]=useState(false)
 
+
   const handleOpen=()=>{
     setOpen(true);
   }

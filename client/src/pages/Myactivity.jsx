@@ -31,7 +31,13 @@ const MyActivity = () => {
 
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/userposts/${useId}`); // Replace with your API endpoint
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/userposts/${useId}`,{
+          method: 'GET',
+          headers: {
+          'Content-Type': 'application/json',
+          'Authorization':`Bearer ${localStorage.getItem('token')}`
+        },
+        }); // Replace with your API endpoint
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -65,6 +71,7 @@ const MyActivity = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ title: updatedTitle, content: updatedContent }),
       });
@@ -91,6 +98,10 @@ const MyActivity = () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/deletePost/${useId}/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
       });
 
       if (!response.ok) {

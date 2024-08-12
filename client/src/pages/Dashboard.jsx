@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import { ThumbUp, Comment } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -28,26 +29,38 @@ const Dashboard = () => {
   const [newComment, setNewComment] = useState('');
 
   const user = useSelector((state) => state.auth.user);
-
+  const navigate=useNavigate();
   useEffect(() => {
     // Fetch posts from the backend
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+        });
+        if (response.status===401 ||response.status===400) {
+          localStorage.removeItem('token')
+          alert("Session expired please logout ans login again")
+          return; 
+        }else if(!response.ok){
+          throw new Error('Network response was not ok')
+        }else{
         const data = await response.json();
         setPosts(data);
+        }
       } catch (error) {
         console.error('Error fetching posts:', error);
+
       }
     };
 
     fetchPosts();
     const interval = setInterval(fetchPosts, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [navigate]);
 
   // handle comment box to open
   const handleCommentsOpen = (post) => {
@@ -64,25 +77,26 @@ const Dashboard = () => {
   };
 
   // handle comment submission
-  const handleCommentSubmit = async(event) => {
+  const handleCommentSubmit = async (event) => {
     event.preventDefault();
 
-    const response=await fetch(`${import.meta.env.VITE_API_URL}/api/posts/comments/${selectedPost._id}`,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/comments/${selectedPost._id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
-      body:JSON.stringify({
-        author:user.username,
-        content:newComment
+      body: JSON.stringify({
+        author: user.username,
+        content: newComment
       })
     })
-    if(!response.ok){
+    if (!response.ok) {
       throw new Error('Failed to submit comment');
     }
-    const updatedPost=await response.json();
+    const updatedPost = await response.json();
     setSelectedPost(updatedPost);
-    setPosts(posts.map(post=>post._id===updatedPost._id?updatedPost:post));
+    setPosts(posts.map(post => post._id === updatedPost._id ? updatedPost : post));
     setNewComment('');
   };
 
@@ -93,22 +107,21 @@ const Dashboard = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ userId: user.id }), // Send user ID in the request body
+        body: JSON.stringify({ userId: user.id }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`Failed to ${isLiked ? 'unlike' : 'like'} the post`);
       }
-  
+
       const updatedPost = await response.json();
-  
-      // Update the local state with the new number of likes and likedBy
+
       setPosts((prevPosts) =>
         prevPosts.map((post) => (post._id === updatedPost._id ? updatedPost : post))
       );
-  
-      // If the toggled post is currently selected, update it as well
+
       if (selectedPost && selectedPost._id === updatedPost._id) {
         setSelectedPost(updatedPost);
       }
@@ -116,7 +129,7 @@ const Dashboard = () => {
       console.error(`Error ${isLiked ? 'unliking' : 'liking'} the post:`, error);
     }
   };
-  
+
 
   return (
     <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
@@ -155,15 +168,15 @@ const Dashboard = () => {
                 </Typography>
               </CardContent>
               <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #ddd' }}>
-              <Button
-  variant="contained"
-  color={post.likedBy.includes(user.id) ? 'secondary' : 'primary'}
-  startIcon={<ThumbUp />}
-  sx={{ textTransform: 'none', boxShadow: 2 }}
-  onClick={() => handleLikeToggle(post._id, post.likedBy.includes(user.id))} // Toggle like/unlike
->
-  {post.likedBy.includes(user.id) ? 'Unlike' : 'Like'}
-</Button>
+                <Button
+                  variant="contained"
+                  color={post.likedBy.includes(user.id) ? 'secondary' : 'primary'}
+                  startIcon={<ThumbUp />}
+                  sx={{ textTransform: 'none', boxShadow: 2 }}
+                  onClick={() => handleLikeToggle(post._id, post.likedBy.includes(user.id))}
+                >
+                  {post.likedBy.includes(user.id) ? 'Unlike' : 'Like'}
+                </Button>
                 <Button
                   variant="contained"
                   color="secondary"

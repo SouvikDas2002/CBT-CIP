@@ -24,6 +24,7 @@ app.use(express.json());
 require('dotenv').config();
 
 const mongoose=require('mongoose');
+const verifyToken=require('./middlewares/authMiddleware')
 const authRoute=require("./routes/auth");
 const userRoute=require('./routes/users');
 const postRoute=require('./routes/post');
@@ -65,9 +66,10 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 
 // Routes
 
+
 app.use("/api/auth",authRoute);
-app.use("/api/users",userRoute);
-app.use("/api/posts",postRoute);
+app.use("/api/users",verifyToken,userRoute);
+app.use("/api/posts",verifyToken,postRoute);
 
 
 app.listen(PORT,(err)=>{

@@ -4,7 +4,7 @@ const Post = require('../models/post');
 const User=require('../models/user')
 
 // Create a new post
-router.post('/', async (req, res) => {
+router.post('/',async (req, res) => {
   try {
     const { id,title, author, content, tags, picture, comments, likes } = req.body;
     // console.log(req.body);;

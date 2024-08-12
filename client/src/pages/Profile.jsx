@@ -50,6 +50,7 @@ const Profile = () => {
       const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${user.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization':`Bearer ${localStorage.getItem('token')}`
         },
       });
       alert('Profile updated successfully!');
