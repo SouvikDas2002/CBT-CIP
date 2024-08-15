@@ -77,7 +77,7 @@ const MessageBox = ({ open, onClose, users }) => {
           '& .MuiDrawer-paper': {
             width: '400px',
             boxSizing: 'border-box',
-            backgroundColor: 'black'
+            backgroundColor: '#2d1b4b'
           },
         }}
       >

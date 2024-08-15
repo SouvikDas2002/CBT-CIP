@@ -33,7 +33,7 @@ router.post('/signup', async (req, res) => {
         
         const payload = { userId: user._id };
         console.log(payload);
-        const token = jwt.sign(payload, process.env.ACCESS_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign(payload, process.env.ACCESS_SECRET, { expiresIn: '24h' });
 
     res.status(201).json({ token,userId:user._id,username:user.username,email:email,bio:user.bio,profilePic:user.profilePic });
   } catch (error) {
@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
     }
 
     const payload = { userId: user._id };
-    const token = jwt.sign(payload, process.env.ACCESS_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.ACCESS_SECRET, { expiresIn: '24h' });
 
     res.json({ token ,userId:user._id,username:user.username,email:email,bio:user.bio,profilePic:user.profilePic});
   } catch (error) {
