@@ -63,7 +63,6 @@ const CreatePost = ({ open, handleClose }) => {
       const uploadResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: formData,
@@ -71,6 +70,7 @@ const CreatePost = ({ open, handleClose }) => {
 
       const uploadResult = await uploadResponse.json();
 
+      console.log(uploadResult);
       if (!uploadResponse.ok) {
         console.error('Failed to upload image:', uploadResult.message);
         return;
@@ -85,7 +85,8 @@ const CreatePost = ({ open, handleClose }) => {
         comments: comments.split('\n').map(comment => ({ content: comment, date: new Date().toISOString().split('T')[0] })),
         picture: uploadResult.filePath,
       };
-
+      console.log(newPost.picture);
+      
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
         method: 'POST',
         headers: {

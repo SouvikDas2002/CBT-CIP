@@ -17,6 +17,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+router.get('/',async(req,res)=>{
+  try{
+    const users=await User.find({});
+    res.status(200).json(users);
+  }catch(err){
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+})
+
 router.put('/:id', upload.single('profilePic'), async (req, res) => {
   try {
     const { id } = req.params;

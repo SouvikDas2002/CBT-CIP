@@ -16,23 +16,29 @@ import {
   ListItemText,
   Divider,
   TextField,
-  Box
+  Box,
+  IconButton
 } from '@mui/material';
-import { ThumbUp, Comment } from '@mui/icons-material';
+import { ThumbUp, Comment, Telegram, NotificationAdd } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import MessageBox from '../components/MessageBox';
+import io from 'socket.io-client';
 
 const Dashboard = () => {
   const [posts, setPosts] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [newComment, setNewComment] = useState('');
+  const [messaging, setMessaging] = useState(false);
+  const [users, setUsers] = useState([]);
 
   const user = useSelector((state) => state.auth.user);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Fetch posts from the backend
-    const fetchPosts = async () => {
+    // Function to check token validity
+    const checkTokenValidity = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
           method: 'GET',
@@ -41,28 +47,29 @@ const Dashboard = () => {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
         });
-        if (response.status===401 ||response.status===400) {
-          localStorage.removeItem('token')
-          alert("Session expired please logout ans login again")
-          return; 
-        }else if(!response.ok){
-          throw new Error('Network response was not ok')
-        }else{
-        const data = await response.json();
-        setPosts(data);
+        
+
+        if (response.status === 401 || response.status === 400) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('persist:root');
+          navigate('/login');
+        } else if (!response.ok) {
+          throw new Error('Network response was not ok');
+        } else {
+          const data = await response.json();
+          setPosts(data);
         }
       } catch (error) {
         console.error('Error fetching posts:', error);
-
+        navigate('/login');
       }
     };
 
-    fetchPosts();
-    const interval = setInterval(fetchPosts, 5000);
+    checkTokenValidity();
+    const interval = setInterval(checkTokenValidity, 5000);
     return () => clearInterval(interval);
   }, [navigate]);
 
-  // handle comment box to open
   const handleCommentsOpen = (post) => {
     setSelectedPost(post);
     setOpen(true);
@@ -76,28 +83,33 @@ const Dashboard = () => {
     setNewComment(event.target.value);
   };
 
-  // handle comment submission
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/comments/${selectedPost._id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        author: user.username,
-        content: newComment
-      })
-    })
-    if (!response.ok) {
-      throw new Error('Failed to submit comment');
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts/comments/${selectedPost._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          author: user.username,
+          content: newComment
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit comment');
+      }
+
+      const updatedPost = await response.json();
+      setSelectedPost(updatedPost);
+      setPosts(posts.map(post => post._id === updatedPost._id ? updatedPost : post));
+      setNewComment('');
+    } catch (error) {
+      console.error('Error submitting comment:', error);
     }
-    const updatedPost = await response.json();
-    setSelectedPost(updatedPost);
-    setPosts(posts.map(post => post._id === updatedPost._id ? updatedPost : post));
-    setNewComment('');
   };
 
   const handleLikeToggle = async (postId, isLiked) => {
@@ -130,12 +142,55 @@ const Dashboard = () => {
     }
   };
 
+  const toggleMessagingDrawer = () => {
+    setMessaging(!messaging);
+  };
+
+
+ localStorage.getItem("token")&&useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+        });
+
+        if (response.status === 401 || response.status === 400) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else if (!response.ok) {
+          throw new Error('Network response was not ok');
+        } else {
+          const data = await response.json();
+          setUsers(data);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        navigate('/login');
+      }
+    };
+
+    fetchUsers();
+  },[]);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
-      <Typography variant="h3" component="h1" gutterBottom>
-        Hi, {user.username}
-      </Typography>
+      <Box display={"flex"} textAlign={"center"} justifyContent={"space-between"}>
+        <Typography variant="h3" component="h1" gutterBottom>
+          Hi, {user.username}
+        </Typography>
+        <div>
+          <IconButton size='large' color='primary'>
+            <NotificationAdd />
+          </IconButton>
+          <IconButton size='large' color='secondary' onClick={toggleMessagingDrawer}>
+            <Telegram />
+          </IconButton>
+        </div>
+      </Box>
       <Grid container spacing={4}>
         {posts.map(post => (
           <Grid item key={post._id} xs={12} sm={6} md={4}>
@@ -160,7 +215,7 @@ const Dashboard = () => {
                 </Typography>
                 <div style={{ marginTop: '8px' }}>
                   {post.tags.map(tag => (
-                    <Chip key={tag} label={tag} size="small" style={{ marginRight: '4px' }} />
+                    <Chip key={tag} label={tag} size="small" style={{ marginRight: '4px', color: 'blue' }} />
                   ))}
                 </div>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -209,7 +264,7 @@ const Dashboard = () => {
                 alt={selectedPost.title}
                 sx={{ mb: 2 }}
               />
-              <Typography variant="h6" component="div" sx={{ mb: 2 }}>
+                            <Typography variant="h6" component="div" sx={{ mb: 2 }}>
                 {selectedPost.title}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -288,8 +343,11 @@ const Dashboard = () => {
           )}
         </Box>
       </Drawer>
+
+      <MessageBox open={messaging} onClose={toggleMessagingDrawer} users={users} />
     </Container>
   );
 };
 
 export default Dashboard;
+

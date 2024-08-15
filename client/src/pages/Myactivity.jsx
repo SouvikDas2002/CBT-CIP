@@ -37,7 +37,7 @@ const MyActivity = () => {
           'Content-Type': 'application/json',
           'Authorization':`Bearer ${localStorage.getItem('token')}`
         },
-        }); // Replace with your API endpoint
+        });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
