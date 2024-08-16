@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../redux/authSlice';
 import { Box, Button, Container, TextField, Typography, Avatar, Grid, Paper, CircularProgress } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -114,7 +114,7 @@ const Signup = () => {
             {error && <Typography color="error">{error.message}</Typography>}
             <Grid container>
               <Grid item>
-                <Button href="/login" variant="body2">
+                <Button component={Link} to="/login" variant="body2">
                   {"Already have an account? Sign In"}
                 </Button>
               </Grid>

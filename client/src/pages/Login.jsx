@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Container, TextField, Typography, Avatar, Grid, Paper } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../redux/authSlice';
 
@@ -79,10 +79,10 @@ const Login = () => {
             {error && <Typography color="error">{error.message}</Typography>}
             <Grid container>
               <Grid item>
-                <Button href="/signup" variant="body2">
+                <Button component={Link} to="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Button>
-                <Button href="/password-recovery" variant="caption" sx={{ fontSize: "10px" }}>
+                <Button component={Link} to="/password-recovery" variant="caption" sx={{ fontSize: "10px" }}>
                   Forget Your password? Change password
                 </Button>
               </Grid>
