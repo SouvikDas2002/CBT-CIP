@@ -17,17 +17,21 @@ require('dotenv').config();
 
 app.use(express.json({ limit: '10mb' }));
 app.use(cors({
-  origin: [process.env.ORIGIN],
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
+  optionsSuccessStatus: 200
 }));
 
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: [process.env.ORIGIN],
+    origin: '*',
     methods: ['GET', 'POST'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 200
   },
 });
 

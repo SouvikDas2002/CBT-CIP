@@ -19,11 +19,14 @@ const PassRecover = () => {
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
-    await fetch(`${import.meta.env.VITE_API_URL}/api/auth/recover`, {
+    const response=await fetch(`${import.meta.env.VITE_API_URL}/api/auth/recover`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, otp, newPassword }),
     });
+    if(response.ok){
+      alert('password reset successfull')
+    }
   };
 
   return (
