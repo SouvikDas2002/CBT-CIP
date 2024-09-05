@@ -22,11 +22,12 @@ const Profile = () => {
       setProfilePicFile(file);
     }
   };
-
+  console.log(profilePicFile);
+  
   const handleSave = async () => {
     const updatedProfile = {
       username: name || user.username,
-      bio: bio || user.bio,
+      bio: bio || user.bio
     };
 
     dispatch(localUpdate(updatedProfile));

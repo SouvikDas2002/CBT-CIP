@@ -116,7 +116,7 @@ const MyActivity = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom>
-        My Activity
+        My Posts
       </Typography>
       <Grid container spacing={4}>
         {posts.map((post) => (

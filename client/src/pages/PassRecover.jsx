@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Container, TextField, Typography, Paper } from '@mui/material';
+import backgroundImageUrl from '../assets/login-back.png'; // Assuming you have a background image here
 
 const PassRecover = () => {
   const [step, setStep] = useState('request');
@@ -19,31 +20,44 @@ const PassRecover = () => {
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
-    const response=await fetch(`${import.meta.env.VITE_API_URL}/api/auth/recover`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/recover`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, otp, newPassword }),
     });
-    if(response.ok){
-      alert('password reset successfull')
+    if (response.ok) {
+      alert('Password reset successful');
     }
   };
 
   return (
     <Container
       component="main"
-      maxWidth="xs"
+      maxWidth={false}
+      disableGutters
       sx={{
+        height: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: 'url(/images/background.jpg)',
+        backgroundImage: `url(${backgroundImageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        pt: 10
+        backgroundRepeat: 'no-repeat',
       }}
     >
-      <Paper elevation={6} sx={{ padding: 3 }}>
+      <Paper
+        elevation={6}
+        sx={{
+          width: '100%',
+          maxWidth: '400px', // Same width as login
+          padding: 3,
+          borderRadius: 15,
+          backdropFilter: 'blur(10px)',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          animation: 'fadeInUp 1s ease-out',
+        }}
+      >
         <Box
           sx={{
             display: 'flex',
@@ -51,13 +65,17 @@ const PassRecover = () => {
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h5">
+          <Typography
+            component="h1"
+            variant="h5"
+            sx={{ fontWeight: "bold", fontSize: '30px', fontFamily: 'Dancing Script', color: 'white' }}
+          >
             Password Recovery
           </Typography>
           {step === 'request' ? (
             <Box component="form" onSubmit={handleRecovery} noValidate sx={{ mt: 1 }}>
               <TextField
-                variant="outlined"
+                variant="standard"
                 margin="normal"
                 required
                 fullWidth
@@ -68,13 +86,27 @@ const PassRecover = () => {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                sx={{
+                  borderRadius: '8px',
+                  input: { color: 'white' },
+                  label: { color: 'white' },
+                  '& .MuiInput-underline:before': {
+                    borderBottomColor: 'white',
+                  },
+                  '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                    borderBottomColor: 'white',
+                  },
+                  '& .MuiInput-underline:after': {
+                    borderBottomColor: 'white',
+                  },
+                }}
               />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="secondary"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 3, mb: 2, backgroundColor: 'primary.main', color: '#fff' }}
               >
                 Send Recovery Email
               </Button>
@@ -82,7 +114,7 @@ const PassRecover = () => {
           ) : (
             <Box component="form" onSubmit={handlePasswordReset} noValidate sx={{ mt: 1 }}>
               <TextField
-                variant="outlined"
+                variant="standard"
                 margin="normal"
                 required
                 fullWidth
@@ -92,9 +124,23 @@ const PassRecover = () => {
                 autoFocus
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
+                sx={{
+                  borderRadius: '8px',
+                  input: { color: 'white' },
+                  label: { color: 'white' },
+                  '& .MuiInput-underline:before': {
+                    borderBottomColor: 'white',
+                  },
+                  '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                    borderBottomColor: 'white',
+                  },
+                  '& .MuiInput-underline:after': {
+                    borderBottomColor: 'white',
+                  },
+                }}
               />
               <TextField
-                variant="outlined"
+                variant="standard"
                 margin="normal"
                 required
                 fullWidth
@@ -105,23 +151,52 @@ const PassRecover = () => {
                 autoComplete="new-password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                sx={{
+                  borderRadius: '8px',
+                  input: { color: 'white' },
+                  label: { color: 'white' },
+                  '& .MuiInput-underline:before': {
+                    borderBottomColor: 'white',
+                  },
+                  '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                    borderBottomColor: 'white',
+                  },
+                  '& .MuiInput-underline:after': {
+                    borderBottomColor: 'white',
+                  },
+                }}
               />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="secondary"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 3, mb: 2, backgroundColor: 'primary.main', color: '#fff' }}
               >
                 Reset Password
               </Button>
             </Box>
           )}
-          <Button href="/login" variant="body2">
+          <Button href="/login" variant="body2" sx={{ color: 'white', textDecoration: 'underline' }}>
             {"Back to login page"}
           </Button>
         </Box>
       </Paper>
+
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}
+      </style>
     </Container>
   );
 };

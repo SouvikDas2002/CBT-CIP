@@ -16,7 +16,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   return (
     <AppBar position="fixed" style={{backgroundColor:"black"}}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1,fontFamily: "Dancing Script"}}>
           ConnectSphere
         </Typography>
         {isAuthenticated ? (

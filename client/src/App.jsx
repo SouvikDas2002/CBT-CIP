@@ -12,6 +12,7 @@ import PassRecover from './pages/PassRecover';
 import Profile from './pages/Profile';
 import { logout } from './redux/authSlice';
 import Myactivity from './pages/Myactivity';
+import ParticleCanvas from './components/ParticleCanvas';
 
 const theme = createTheme();
 
@@ -33,7 +34,10 @@ const App = () => {
             path="/"
             element={
               <ProtecRoute isAuthenticated={isAuthenticated}>
+                <div style={{position:'relative',overflow:'hidden'}}>
+                <ParticleCanvas/>
                 <Dashboard />
+                </div>
               </ProtecRoute>
             }
           />

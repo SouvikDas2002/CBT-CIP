@@ -115,8 +115,8 @@ const CreatePost = ({ open, handleClose }) => {
   return (
     <StyledDialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Typography variant="h6" component="div">
-          Create a New Post
+        <Typography variant="h5" component="div" sx={{fontFamily:"cursive"}}>
+        Let’s write something unforgettable.😊
         </Typography>
         <IconButton
           edge="end"

@@ -19,11 +19,13 @@ import {
   Box,
   IconButton
 } from '@mui/material';
-import { ThumbUp, Comment, Telegram, NotificationAdd } from '@mui/icons-material';
+import { ThumbUp, Comment, Telegram, NotificationAdd, HeartBroken, Favorite } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import MessageBox from '../components/MessageBox';
 import io from 'socket.io-client';
+import HeaderBox from '../components/HeaderBox';
+import ParticleCanvas from '../components/ParticleCanvas';
 
 const Dashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -37,7 +39,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Function to check token validity
     const checkTokenValidity = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
@@ -47,7 +48,7 @@ const Dashboard = () => {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
         });
-        
+
 
         if (response.status === 401 || response.status === 400) {
           localStorage.removeItem('token');
@@ -147,7 +148,7 @@ const Dashboard = () => {
   };
 
 
- localStorage.getItem("token")&&useEffect(() => {
+  localStorage.getItem("token") && useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
@@ -174,28 +175,16 @@ const Dashboard = () => {
     };
 
     fetchUsers();
-  },[]);
-
+  }, []);
   return (
-    <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
-      <Box display={"flex"} textAlign={"center"} justifyContent={"space-between"}>
-        <Typography variant="h3" component="h1" gutterBottom>
-          Hi, {user.username}
-        </Typography>
-        <div>
-          <IconButton size='large' color='primary'>
-            <NotificationAdd />
-          </IconButton>
-          <IconButton size='large' color='secondary' onClick={toggleMessagingDrawer}>
-            <Telegram />
-          </IconButton>
-        </div>
-      </Box>
+    // <ParticleCanvas>
+    <Container maxWidth="lg" sx={{ mt: 10, mb: 4, position: "relative", zIndex: 999}}>
+      <HeaderBox user={user.username} toggleMessagingDrawer={toggleMessagingDrawer} />
       <Grid container spacing={4}>
         {posts.map(post => (
           <Grid item key={post._id} xs={12} sm={6} md={4}>
             <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {console.log(post)}
+              {console.log(post)}
               <CardMedia
                 component="img"
                 height="140"
@@ -204,14 +193,21 @@ const Dashboard = () => {
                 onClick={() => handleCommentsOpen(post)}
                 sx={{ cursor: 'pointer' }}
               />
-              <CardContent sx={{ flexGrow: 1 }}>
+              <CardContent sx={{ flexGrow: 1 ,backgroundColor:'whitesmoke'}}>
                 <Typography variant="h5" component="div">
                   {post.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   by {post.author} on {new Date(post.published_date).toLocaleDateString()}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <Typography variant="body2" color="text.secondary" sx={{
+                  mt: 1,
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 2,
+                  textOverflow: 'ellipsis'
+                }}>
                   {post.content}
                 </Typography>
                 <div style={{ marginTop: '8px' }}>
@@ -223,15 +219,16 @@ const Dashboard = () => {
                   Likes: {post.likes} &nbsp; | &nbsp; Comments: {post.comments.length}
                 </Typography>
               </CardContent>
-              <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #ddd' }}>
+              <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #ddd',backgroundColor:'whitesmoke' }}>
+
                 <Button
                   variant="contained"
                   color={post.likedBy.includes(user.id) ? 'secondary' : 'primary'}
-                  startIcon={<ThumbUp />}
+                  startIcon={<Favorite />}
                   sx={{ textTransform: 'none', boxShadow: 2 }}
                   onClick={() => handleLikeToggle(post._id, post.likedBy.includes(user.id))}
                 >
-                  {post.likedBy.includes(user.id) ? 'Unlike' : 'Like'}
+                  {post.likedBy.includes(user.id) ? '' : 'Like'}
                 </Button>
                 <Button
                   variant="contained"
@@ -248,13 +245,20 @@ const Dashboard = () => {
         ))}
       </Grid>
 
+
       <Drawer
         anchor="right"
         open={open}
         onClose={handleCommentsClose}
       >
         <Box
-          sx={{ width: 350, p: 2 }}
+          sx={{
+            width: { xs: '100%', sm: 450 },
+            p: 2,
+            overflow: 'auto',
+            maxHeight: 'calc(100vh - 16px)',
+            boxSizing: 'border-box'
+          }}
           role="presentation"
         >
           {selectedPost && (
@@ -263,9 +267,9 @@ const Dashboard = () => {
                 component="img"
                 image={`${import.meta.env.VITE_API_URL}${selectedPost.picture}`}
                 alt={selectedPost.title}
-                sx={{ mb: 2 }}
+                sx={{ mb: 2, width: '100%', height: 'auto' }}
               />
-                            <Typography variant="h6" component="div" sx={{ mb: 2 }}>
+              <Typography variant="h6" component="div" sx={{ mb: 2 }}>
                 {selectedPost.title}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -274,11 +278,11 @@ const Dashboard = () => {
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 {selectedPost.content}
               </Typography>
-              <div style={{ marginBottom: '16px' }}>
+              <Box sx={{ marginBottom: '16px', display: 'flex', flexWrap: 'wrap' }}>
                 {selectedPost.tags.map(tag => (
-                  <Chip key={tag} label={tag} size="small" style={{ marginRight: '4px' }} />
+                  <Chip key={tag} label={tag} size="small" sx={{ marginRight: '4px', marginBottom: '4px' }} />
                 ))}
-              </div>
+              </Box>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 Likes: {selectedPost.likes} &nbsp; | &nbsp; Comments: {selectedPost.comments.length}
               </Typography>
@@ -347,6 +351,7 @@ const Dashboard = () => {
 
       <MessageBox open={messaging} onClose={toggleMessagingDrawer} users={users} />
     </Container>
+    // </ParticleCanvas>
   );
 };
 
