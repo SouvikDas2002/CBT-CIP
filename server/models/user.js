@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    contact:{
+      type:String,
+      required:true,
+      unique:true
+    },
     bio: {
       type: String,
       default: '',

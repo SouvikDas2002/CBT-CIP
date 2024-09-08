@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../redux/authSlice';
-import { Box, Button, Container, TextField, Typography, Avatar, Grid, Paper, CircularProgress } from '@mui/material';
+import { Box, Button, Container, TextField, Typography, Avatar, Grid, Paper, CircularProgress, IconButton, InputAdornment } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link, useNavigate } from 'react-router-dom';
 import backgroundImageUrl from '../assets/login-back.png';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [contact, setContact] = useState('');
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
@@ -21,14 +27,35 @@ const Signup = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (username.length < 3 || username.length > 10 || !/^[a-zA-Z]+$/.test(username)) {
+      newErrors.username = "Username must be 3-10 characters long and contain only alphabets.";
+    }
+    if (!/^[a-zA-Z0-9._%+-]+@(gmail\.com|chitkara\.edu\.in)$/.test(email)) {
+      newErrors.email = "Email must be a valid @gmail.com or @chitkara.edu.in address.";
+    }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+      newErrors.password = "Password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, one number, and one special character.";
+    }
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match.";
+    }
+    if (!/^\d{10}$/.test(contact)) {
+      newErrors.contact = "Contact number must be 10 digits.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSignup = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
+    if (validateForm()) {
+      dispatch(register({ username, email, password, contact }));
+      navigate('/');
     }
-    dispatch(register({ username, email, password }));
-    navigate('/');
   };
 
   return (
@@ -86,19 +113,12 @@ const Signup = () => {
               autoFocus
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              error={!!errors.username}
+              helperText={errors.username}
               sx={{
-                borderRadius: '8px',
                 input: { color: 'white' },
                 label: { color: 'white' },
-                '& .MuiInput-underline:before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:after': {
-                  borderBottomColor: 'white',
-                },
+                '& .MuiInput-underline:before': { borderBottomColor: 'white' },
               }}
             />
             <TextField
@@ -112,19 +132,12 @@ const Signup = () => {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              error={!!errors.email}
+              helperText={errors.email}
               sx={{
-                borderRadius: '8px',
                 input: { color: 'white' },
                 label: { color: 'white' },
-                '& .MuiInput-underline:before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:after': {
-                  borderBottomColor: 'white',
-                },
+                '& .MuiInput-underline:before': { borderBottomColor: 'white' },
               }}
             />
             <TextField
@@ -134,24 +147,29 @@ const Signup = () => {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              error={!!errors.password}
+              helperText={errors.password}
               sx={{
-                borderRadius: '8px',
                 input: { color: 'white' },
                 label: { color: 'white' },
-                '& .MuiInput-underline:before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:after': {
-                  borderBottomColor: 'white',
-                },
+                '& .MuiInput-underline:before': { borderBottomColor: 'white' },
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
               }}
             />
             <TextField
@@ -161,24 +179,47 @@ const Signup = () => {
               fullWidth
               name="confirmPassword"
               label="Confirm Password"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               id="confirmPassword"
-              autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword}
               sx={{
-                borderRadius: '8px',
                 input: { color: 'white' },
                 label: { color: 'white' },
-                '& .MuiInput-underline:before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:after': {
-                  borderBottomColor: 'white',
-                },
+                '& .MuiInput-underline:before': { borderBottomColor: 'white' },
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              variant="standard"
+              margin="normal"
+              required
+              fullWidth
+              name="contact"
+              label="Contact Number"
+              type="text"
+              id="contact"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              error={!!errors.contact}
+              helperText={errors.contact}
+              sx={{
+                input: { color: 'white' },
+                label: { color: 'white' },
+                '& .MuiInput-underline:before': { borderBottomColor: 'white' },
               }}
             />
             {loading ? (
@@ -198,7 +239,7 @@ const Signup = () => {
                   transition: 'all 0.3s ease',
                   '&:hover': {
                     boxShadow: '0 6px 15px rgba(0, 0, 0, 0.7)',
-                  backgroundColor: 'linear-gradient(90deg, rgba(154, 59, 255, 1) 0%, rgba(99, 110, 255, 1) 100%)',
+                    backgroundColor: 'linear-gradient(90deg, rgba(154, 59, 255, 1) 0%, rgba(99, 110, 255, 1) 100%)',
                   },
                 }}
               >

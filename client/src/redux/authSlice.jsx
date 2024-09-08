@@ -5,9 +5,9 @@ import axios from 'axios';
 
 export const register = createAsyncThunk(
   'auth/register',
-  async ({ username, email, password }, { rejectWithValue }) => {
+  async ({ username, email, password,contact }, { rejectWithValue }) => {
     try {
-        const data={username,email,password}
+        const data={username,email,password,contact}
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/signup`,data);
       return response.data;
     } catch (err) {

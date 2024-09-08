@@ -18,7 +18,8 @@ const transporter=nodemailer.createTransport({
 
 // Signup Route
 router.post('/signup', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password,contact } = req.body;
+  
   
   try {
       let user = await User.findOne({ email });
@@ -27,7 +28,7 @@ router.post('/signup', async (req, res) => {
           return res.status(400).json({ message: 'User already exists' });
         }
         
-        user = new User({ username, email, password });
+        user = new User({ username, email, password,contact });
         console.log(user);
         await user.save();
         
@@ -35,7 +36,7 @@ router.post('/signup', async (req, res) => {
         console.log(payload);
         const token = jwt.sign(payload, process.env.ACCESS_SECRET, { expiresIn: '10d' });
 
-    res.status(201).json({ token,userId:user._id,username:user.username,email:email,bio:user.bio,profilePic:user.profilePic });
+    res.status(201).json({ token,userId:user._id,username:user.username,email:email,bio:user.bio,profilePic:user.profilePic,contact:contact });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
