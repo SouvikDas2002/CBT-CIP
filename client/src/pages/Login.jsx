@@ -1,12 +1,20 @@
-import backgroundImageUrl from '../assets/login-back.png';
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Container, TextField, Typography, Avatar, Grid, Paper, IconButton, InputAdornment } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Grid,
+  Paper,
+  IconButton,
+  InputAdornment,
+  Link as MuiLink,
+} from '@mui/material';
+import { Google, Facebook, Twitter, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../redux/authSlice';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -41,100 +49,102 @@ const Login = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: `url(${backgroundImageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        // backgroundSize: 'cover',
+        // backgroundPosition: 'center',
+        // backgroundRepeat: 'no-repeat',
+        marginTop:{xs: '70px',sm: '60px',md:'0px'}
       }}
     >
       <Paper
         elevation={6}
-        style={{
-          padding: 30,
-          borderRadius: 15,
-          backdropFilter: 'blur(10px)',
-          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-          animation: `fadeInUp 1s ease-out`,
+        sx={{
+          display: 'flex',
+          width: { xs: '90%', sm: '80%', md: '75%' },
+          maxWidth: '1200px',
+          height: { xs: 'auto', md: '80vh'},
+          borderRadius: '24px',
+          overflow: 'hidden',
+          flexDirection: { xs: 'column', md: 'row' },
+          marginTop:'70px'
         }}
       >
         <Box
           sx={{
+            flex: 1,
+            backgroundColor: '#f5f5f5',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'center',
+            padding: { xs: '20px', md: '40px' },
+            textAlign: 'center',
+            // position:'relative'
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: '40px', fontFamily: 'Dancing Script', color: 'white' }}>
-            Sign In
+          <Typography variant="h4" sx={{ marginBottom: '10px', fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
+            Welcome! to
           </Typography>
-          <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 'bold',
+              mb: 3,
+              fontSize: { xs: '2rem', md: '3rem' },
+            }}
+          >
+            ConnectSphere
+          </Typography>
+          <Typography>
+            Not a member yet?{' '}
+            <MuiLink href="/signup" underline="hover" sx={{ color: 'black', fontWeight: 'bold' }}>
+              Register now
+            </MuiLink>
+          </Typography>
+        </Box>
+
+        {/* Right Side*/}
+        <Box
+          sx={{
+            flex: 1,
+            padding: { xs: '20px', sm: '40px' },
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            // position:'relative',
+          }}
+        >
+          <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: '22px', mb: '30px' }}>
+            Log in
+          </Typography>
+          <form onSubmit={handleLogin} noValidate>
             <TextField
-              variant="standard"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
+              label="Email or Username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              sx={{
-                borderRadius: '8px',
-                input: { color: 'white' },
-                label: { color: 'white' },
-                '& .MuiInput-underline:before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:after': {
-                  borderBottomColor: 'white',
-                },
+              fullWidth
+              margin="normal"
+              variant="standard"
+              InputProps={{
+                style: { color: 'black' },
               }}
             />
             <TextField
-              variant="standard"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
               label="Password"
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              sx={{
-                borderRadius: '8px',
-                input: { color: 'white' },
-                label: { color: 'white' },
-                '& .MuiInput-underline:before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:after': {
-                  borderBottomColor: 'white',
-                },
-              }}
+              type={showPassword ? 'text' : 'password'}
+              fullWidth
+              margin="normal"
+              variant="standard"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff sx={{ color: 'white' }} /> : <Visibility sx={{ color: 'white' }} />}
+                    <IconButton onClick={handleClickShowPassword} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
+                style: { color: 'black' },
               }}
             />
             <Button
@@ -143,52 +153,43 @@ const Login = () => {
               variant="contained"
               sx={{
                 mt: 3,
-                mb: 2,
-                backgroundColor: 'primary.main',
-                color: '#fff',
-                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)',
-                borderRadius: '8px',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  boxShadow: '0 6px 15px rgba(0, 0, 0, 0.7)',
-                  backgroundColor: 'linear-gradient(90deg, rgba(154, 59, 255, 1) 0%, rgba(99, 110, 255, 1) 100%)',
-                },
+                backgroundColor: 'black',
+                color: 'white',
+                height: '50px',
+                borderRadius: '10px',
+                '&:hover': { backgroundColor: '#333' },
               }}
               disabled={loading}
             >
-              Sign In
+              Log in now
             </Button>
-            {error && <Typography color="error">{error.message}</Typography>}
-            <Grid container justifyContent="center" flexDirection="column" textAlign="center">
-              <Grid item>
-                <Button component={Link} to="/signup" sx={{ textTransform: 'none', color: 'white' }}>
-                  {"Don't have an account? Sign Up"}
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button component={Link} to="/password-recovery" sx={{ fontSize: '0.8rem', textTransform: 'none', color: 'wheat' }}>
-                  Forget Your password? Change password
-                </Button>
-              </Grid>
+          </form>
+          {error && <Typography color="error">{error.message}</Typography>}
+          <MuiLink href="/password-recovery" underline="hover" sx={{ mt: 2, color: '#3c3c3c', fontWeight: 'bold' }}>
+            Forgot your password?
+          </MuiLink>
+          <Typography sx={{ mt: 5, color: '#5b5b5b', fontSize: '14px' }}>
+            Or sign in with
+          </Typography>
+          <Grid container spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
+            <Grid item>
+              <IconButton>
+                <Google sx={{color:'red'}}/>
+              </IconButton>
             </Grid>
-          </Box>
+            <Grid item>
+              <IconButton>
+                <Facebook sx={{color:'blue'}}/>
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton>
+                <Twitter sx={{color:'primary'}}/>
+              </IconButton>
+            </Grid>
+          </Grid>
         </Box>
       </Paper>
-
-      <style>
-        {`
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}
-      </style>
     </Container>
   );
 };

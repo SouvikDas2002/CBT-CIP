@@ -31,6 +31,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Button color="inherit" component={Link} to="/myactivity">
               My Activity
             </Button>
+            <Button color="inherit" component={Link} to="/videos">
+              Videos
+            </Button>
             <Button color="inherit" component={Link} to="/profile">
               Profile
             </Button>

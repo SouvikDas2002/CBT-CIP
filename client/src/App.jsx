@@ -13,8 +13,19 @@ import Profile from './pages/Profile';
 import { logout } from './redux/authSlice';
 import Myactivity from './pages/Myactivity';
 import ParticleCanvas from './components/ParticleCanvas';
+import Videos from './pages/Videos';
 
-const theme = createTheme();
+const theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
+});
 
 const App = () => {
   const dispatch = useDispatch();
@@ -49,10 +60,26 @@ const App = () => {
               </ProtecRoute>
             }
           />
+          <Route
+            path="/videos"
+            element={
+              <ProtecRoute isAuthenticated={isAuthenticated}>
+                <Videos />
+              </ProtecRoute>
+            }
+          />
+          <Route
+            path="/myactivity"
+            element={
+              <ProtecRoute isAuthenticated={isAuthenticated}>
+                <Myactivity />
+              </ProtecRoute>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/password-recovery" element={<PassRecover />} />
-          <Route path='/myactivity' element={<Myactivity/>}/>
+          {/* <Route path='/myactivity' element={<Myactivity/>}/> */}
         </Routes>
       </Router>
     </ThemeProvider>
