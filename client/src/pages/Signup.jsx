@@ -60,6 +60,10 @@ const Signup = () => {
   const handleClickShowConfirmPassword = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+  const handleGoogleSignin=()=>{
+    window.open(`${import.meta.env.VITE_API_URL}/api/auth/google`,
+    "_self")
+  }
 
   return (
     <Container
@@ -239,7 +243,7 @@ const Signup = () => {
           <Typography sx={{ mt: 5, color: '#5b5b5b', fontSize: '14px' }}>Or sign up with</Typography>
           <Grid container spacing={2} sx={{ mt: 2, justifyContent: 'center', mb: { xs: '30px', sm: '55px' } }}>
             <Grid item>
-              <IconButton>
+              <IconButton onClick={handleGoogleSignin}>
                 <Google sx={{color:'red'}}/>
               </IconButton>
             </Grid>

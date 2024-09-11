@@ -9,7 +9,7 @@ const verifyToken=async(req,res,next)=>{
     jwt.verify(token.split(' ')[1],process.env.ACCESS_SECRET,(err,decode)=>{
         if(err){
             return res.status(401).json({message:'Failed to authenticate token'});
-        }
+        }    
         req.userId=decode.id;
         next();
     })

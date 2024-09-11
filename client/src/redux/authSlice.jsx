@@ -61,6 +61,7 @@ const authSlice = createSlice({
         ...state.user,
         ...action.payload
       }
+      state.isAuthenticated=true
     }
   },
   extraReducers: (builder) => {

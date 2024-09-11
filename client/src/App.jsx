@@ -14,6 +14,7 @@ import { logout } from './redux/authSlice';
 import Myactivity from './pages/Myactivity';
 import ParticleCanvas from './components/ParticleCanvas';
 import Videos from './pages/Videos';
+import OAuthCallback from './utils/OAuthCallBack';
 
 const theme = createTheme({
   breakpoints: {
@@ -78,6 +79,7 @@ const App = () => {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/auth/callback" element={<OAuthCallback />} />
           <Route path="/password-recovery" element={<PassRecover />} />
           {/* <Route path='/myactivity' element={<Myactivity/>}/> */}
         </Routes>

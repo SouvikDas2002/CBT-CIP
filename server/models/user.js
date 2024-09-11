@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
     },
     email: {
       type: String,
@@ -23,8 +23,8 @@ const userSchema = new mongoose.Schema(
     },
     contact:{
       type:String,
-      required:true,
-      unique:true
+      deafult:'+91 0000-000-000'
+      // unique:true
     },
     bio: {
       type: String,

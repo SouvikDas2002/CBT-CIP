@@ -184,7 +184,7 @@ const Dashboard = () => {
         {posts.map(post => (
           <Grid item key={post._id} xs={12} sm={6} md={4}>
             <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              {console.log(post)}
+              {/* {console.log(post)} */}
               <CardMedia
                 component="img"
                 height="140"

@@ -3,10 +3,15 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const crypto=require('crypto')
 const nodemailer=require('nodemailer');
+const passport=require('passport');
+const verifyToken = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
 require('dotenv').config();
+
+// router.use(passport.initialize());
+// router.use(passport.session());
 
 const transporter=nodemailer.createTransport({
   service:'Gmail',
@@ -121,6 +126,38 @@ router.post('/recover', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+router.get("/google",passport.authenticate("google",{scope:['profile','email']}))
+
+router.get('/google/callback', passport.authenticate('google', {failureRedirect: '/signup',session:false }),(req,res)=>{
+    console.log("hoii");
+    
+      const token = jwt.sign(
+        { id: req.user._id, email: req.user.email },
+        process.env.ACCESS_SECRET,
+        { expiresIn: '10h' }
+      );
+      console.log(token);
+      
+      res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
+});
+
+router.get('/protected-route', verifyToken, async(req, res) => {
+  console.log(req.userId);
+
+  const userdata=await User.findOne({_id:req.userId});
+  console.log(userdata);
+  
+  
+  res.json(userdata);
+});
+
+router.get("/logout",(req,res)=>{
+  req.logout();
+  res.redirect(process.env.CLIENT_URL);
+  
+})
 
 
 module.exports = router;
